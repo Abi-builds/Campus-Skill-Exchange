@@ -1,32 +1,31 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ReviewCreate(BaseModel):
     session_id: int
     reviewed_user_id: int
-    rating: int
+    rating: int = Field(..., ge=1, le=5)
     comment: str = ""
 
 
 class ReviewResponse(BaseModel):
-    id: int
+    review_id: int
     session_id: int
     reviewer_id: int
     reviewed_user_id: int
     rating: int
-    comment: str
-    created_at: str
+    comment: str | None
 
-    model_config = {"from_attributes": True}
+    class Config:
+        from_attributes = True
 
     @classmethod
-    def from_orm_model(cls, obj):
+    def from_orm_model(cls, review):
         return cls(
-            id=obj.id,
-            session_id=obj.session_id,
-            reviewer_id=obj.reviewer_id,
-            reviewed_user_id=obj.reviewed_user_id,
-            rating=obj.rating,
-            comment=obj.comment,
-            created_at=str(obj.created_at),
+            review_id=review.review_id,
+            session_id=review.session_id,
+            reviewer_id=review.reviewer_id,
+            reviewed_user_id=review.reviewed_user_id,
+            rating=review.rating,
+            comment=review.comment,
         )
