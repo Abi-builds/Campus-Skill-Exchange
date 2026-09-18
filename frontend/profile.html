@@ -6,67 +6,556 @@
     <title>Profile - Campus Skill Exchange</title>
     <link rel="stylesheet" href="/css/styles.css">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+        .profile-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .profile-section h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .skill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .skill-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+        }
+
+        .skill-item button {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .skill-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .skill-form select {
+            min-width: 180px;
+        }
+
+        .empty-message {
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+    </style>
 </head>
+
 <body>
     <div class="app-shell">
+
         <aside class="sidebar">
-            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <div class="sidebar-header">
+                <h2>
+                    <i data-lucide="graduation-cap"></i>
+                    SkillExchange
+                </h2>
+            </div>
+
             <nav class="sidebar-nav">
-                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-                <a href="/discover.html"><i data-lucide="search"></i> Discover</a>
-                <a href="/skills.html"><i data-lucide="book-open"></i> My Skills</a>
-                <a href="/matches.html"><i data-lucide="target"></i> Matches</a>
-                <a href="/requests.html"><i data-lucide="send"></i> Exchange Requests</a>
-                <a href="/sessions.html"><i data-lucide="calendar"></i> Sessions</a>
-                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
-                <a href="/notifications.html"><i data-lucide="bell"></i> Notifications</a>
-                <a href="/profile.html" class="active"><i data-lucide="user"></i> Profile</a>
+                <a href="/dashboard.html">
+                    <i data-lucide="layout-dashboard"></i>
+                    Dashboard
+                </a>
+
+                <a href="/discover.html">
+                    <i data-lucide="search"></i>
+                    Discover
+                </a>
+
+                <a href="/skills.html">
+                    <i data-lucide="book-open"></i>
+                    My Skills
+                </a>
+
+                <a href="/matches.html">
+                    <i data-lucide="target"></i>
+                    Matches
+                </a>
+
+                <a href="/requests.html">
+                    <i data-lucide="send"></i>
+                    Exchange Requests
+                </a>
+
+                <a href="/sessions.html">
+                    <i data-lucide="calendar"></i>
+                    Sessions
+                </a>
+
+                <a href="/messages.html">
+                    <i data-lucide="message-circle"></i>
+                    Messages
+                </a>
+
+                <a href="/notifications.html">
+                    <i data-lucide="bell"></i>
+                    Notifications
+                </a>
+
+                <a href="/profile.html" class="active">
+                    <i data-lucide="user"></i>
+                    Profile
+                </a>
             </nav>
-            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+
+            <div class="sidebar-footer">
+                <a href="#" onclick="handleLogout()">
+                    <i data-lucide="log-out"></i>
+                    Logout
+                </a>
+            </div>
         </aside>
+
         <main class="main-content">
-            <div class="page-header"><h2>My Profile</h2></div>
-            <div style="max-width:500px;">
-                <div class="form-group"><label>Name</label><input type="text" id="p-name"></div>
-                <div class="form-group"><label>Bio</label><input type="text" id="p-bio"></div>
+
+            <div class="page-header">
+                <h2>My Profile</h2>
+            </div>
+
+            <!-- PROFILE INFORMATION -->
+            <div class="profile-section">
+                <h3>Profile Information</h3>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="p-name">
+                </div>
+
+                <div class="form-group">
+                    <label>Bio</label>
+                    <input type="text" id="p-bio">
+                </div>
+
                 <div class="form-group">
                     <label>Department</label>
-                    <select id="p-dept"><option value="IT">IT</option><option value="CSE">CSE</option><option value="ECE">ECE</option><option value="Mechanical">Mechanical</option><option value="Electrical">Electrical</option></select>
+                    <select id="p-dept">
+                        <option value="IT">IT</option>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Electrical">Electrical</option>
+                    </select>
                 </div>
+
                 <div class="form-group">
                     <label>Year</label>
-                    <select id="p-year"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+                    <select id="p-year">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
                 </div>
-                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+
+                <button class="btn btn-primary" onclick="saveProfile()">
+                    Save Profile
+                </button>
             </div>
+
+
+            <!-- TEACH SKILLS -->
+            <div class="profile-section">
+                <h3>Skills I Can Teach</h3>
+
+                <div id="teach-skills" class="skill-list"></div>
+
+                <div class="skill-form">
+                    <select id="teach-skill-select">
+                        <option value="">Select a skill</option>
+                    </select>
+
+                    <select id="teach-proficiency">
+                        <option value="BEGINNER">Beginner</option>
+                        <option value="INTERMEDIATE">Intermediate</option>
+                        <option value="ADVANCED">Advanced</option>
+                        <option value="EXPERT">Expert</option>
+                    </select>
+
+                    <button class="btn btn-primary" onclick="addSkill('TEACH')">
+                        Add Skill
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- LEARN SKILLS -->
+            <div class="profile-section">
+                <h3>Skills I Want To Learn</h3>
+
+                <div id="learn-skills" class="skill-list"></div>
+
+                <div class="skill-form">
+                    <select id="learn-skill-select">
+                        <option value="">Select a skill</option>
+                    </select>
+
+                    <select id="learn-proficiency">
+                        <option value="BEGINNER">Beginner</option>
+                        <option value="INTERMEDIATE">Intermediate</option>
+                        <option value="ADVANCED">Advanced</option>
+                        <option value="EXPERT">Expert</option>
+                    </select>
+
+                    <button class="btn btn-primary" onclick="addSkill('LEARN')">
+                        Add Skill
+                    </button>
+                </div>
+            </div>
+
         </main>
     </div>
+
+
     <script src="/js/api.js"></script>
+
     <script>
-        if (!isLoggedIn()) window.location.href = '/';
-        async function loadProfile() {
-            try {
-                const user = await apiRequest('GET', '/auth/me');
-                document.getElementById('p-name').value = user.name;
-                document.getElementById('p-bio').value = user.bio;
-                document.getElementById('p-dept').value = user.department;
-                document.getElementById('p-year').value = user.year;
-            } catch (err) { clearToken(); window.location.href = '/'; }
+
+        if (!isLoggedIn()) {
+            window.location.href = '/';
         }
-        async function saveProfile() {
+
+
+        // ==========================================
+        // LOAD PROFILE
+        // ==========================================
+
+        async function loadProfile() {
+
             try {
+
+                const user = await apiRequest('GET', '/users/me');
+
+                document.getElementById('p-name').value = user.name || '';
+                document.getElementById('p-bio').value = user.bio || '';
+                document.getElementById('p-dept').value = user.department || 'IT';
+                document.getElementById('p-year').value = user.year || 1;
+
+            } catch (err) {
+
+                console.error(err);
+                alert('Unable to load profile.');
+
+            }
+        }
+
+
+        // ==========================================
+        // SAVE PROFILE
+        // ==========================================
+
+        async function saveProfile() {
+
+            try {
+
                 await apiRequest('PATCH', '/users/me', {
+
                     name: document.getElementById('p-name').value,
                     bio: document.getElementById('p-bio').value,
                     department: document.getElementById('p-dept').value,
-                    year: parseInt(document.getElementById('p-year').value),
+                    year: parseInt(
+                        document.getElementById('p-year').value
+                    )
+
                 });
-                alert('Profile updated!');
-            } catch (err) { alert(err.message); }
+
+                alert('Profile updated successfully!');
+
+            } catch (err) {
+
+                console.error(err);
+                alert(err.message);
+
+            }
         }
-        function handleLogout() { clearToken(); window.location.href = '/'; }
-        loadProfile();
+
+
+        // ==========================================
+        // LOAD AVAILABLE SKILLS
+        // ==========================================
+
+        async function loadAvailableSkills() {
+
+            try {
+
+                const skills = await apiRequest('GET', '/skills');
+
+                const teachSelect =
+                    document.getElementById('teach-skill-select');
+
+                const learnSelect =
+                    document.getElementById('learn-skill-select');
+
+
+                skills.forEach(skill => {
+
+                    const teachOption =
+                        document.createElement('option');
+
+                    teachOption.value = skill.id;
+                    teachOption.textContent = skill.name;
+
+                    teachSelect.appendChild(teachOption);
+
+
+                    const learnOption =
+                        document.createElement('option');
+
+                    learnOption.value = skill.id;
+                    learnOption.textContent = skill.name;
+
+                    learnSelect.appendChild(learnOption);
+
+                });
+
+            } catch (err) {
+
+                console.error('Unable to load skills:', err);
+                alert('Unable to load available skills.');
+
+            }
+        }
+
+
+        // ==========================================
+        // LOAD USER SKILLS
+        // ==========================================
+
+        async function loadUserSkills() {
+
+            try {
+
+                const userSkills =
+                    await apiRequest('GET', '/skills/me');
+
+                const teachContainer =
+                    document.getElementById('teach-skills');
+
+                const learnContainer =
+                    document.getElementById('learn-skills');
+
+
+                teachContainer.innerHTML = '';
+                learnContainer.innerHTML = '';
+
+
+                const teachSkills =
+                    userSkills.filter(
+                        skill => skill.skill_type === 'TEACH'
+                    );
+
+                const learnSkills =
+                    userSkills.filter(
+                        skill => skill.skill_type === 'LEARN'
+                    );
+
+
+                displaySkills(
+                    teachContainer,
+                    teachSkills
+                );
+
+                displaySkills(
+                    learnContainer,
+                    learnSkills
+                );
+
+            } catch (err) {
+
+                console.error('Unable to load user skills:', err);
+
+            }
+        }
+
+
+        // ==========================================
+        // DISPLAY SKILLS
+        // ==========================================
+
+        function displaySkills(container, skills) {
+
+            if (skills.length === 0) {
+
+                container.innerHTML =
+                    '<div class="empty-message">' +
+                    'No skills added yet.' +
+                    '</div>';
+
+                return;
+            }
+
+
+            skills.forEach(skill => {
+
+                const item =
+                    document.createElement('div');
+
+                item.className = 'skill-item';
+
+                item.innerHTML = `
+
+                    <span>
+                        ${skill.skill_name}
+                        (${skill.proficiency_level})
+                    </span>
+
+                    <button
+                        onclick="removeSkill(${skill.id})"
+                        title="Remove skill"
+                    >
+                        ×
+                    </button>
+
+                `;
+
+                container.appendChild(item);
+
+            });
+        }
+
+
+        // ==========================================
+        // ADD SKILL
+        // ==========================================
+
+        async function addSkill(skillType) {
+
+            const selectId =
+                skillType === 'TEACH'
+                    ? 'teach-skill-select'
+                    : 'learn-skill-select';
+
+            const proficiencyId =
+                skillType === 'TEACH'
+                    ? 'teach-proficiency'
+                    : 'learn-proficiency';
+
+
+            const skillId =
+                document.getElementById(selectId).value;
+
+            const proficiency =
+                document.getElementById(proficiencyId).value;
+
+
+            if (!skillId) {
+
+                alert('Please select a skill.');
+
+                return;
+            }
+
+
+            try {
+
+                await apiRequest('POST', '/skills', {
+
+                    skill_id: parseInt(skillId),
+                    skill_type: skillType,
+                    proficiency_level: proficiency
+
+                });
+
+
+                document.getElementById(selectId).value = '';
+
+                await loadUserSkills();
+
+                alert('Skill added successfully!');
+
+            } catch (err) {
+
+                console.error(err);
+                alert(err.message);
+
+            }
+        }
+
+
+        // ==========================================
+        // REMOVE SKILL
+        // ==========================================
+
+        async function removeSkill(userSkillId) {
+
+            if (!confirm('Remove this skill from your profile?')) {
+                return;
+            }
+
+
+            try {
+
+                await apiRequest(
+                    'DELETE',
+                    `/skills/${userSkillId}`
+                );
+
+                await loadUserSkills();
+
+            } catch (err) {
+
+                console.error(err);
+                alert(err.message);
+
+            }
+        }
+
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        function handleLogout() {
+
+            clearToken();
+
+            window.location.href = '/';
+
+        }
+
+
+        // ==========================================
+        // INITIALIZE PAGE
+        // ==========================================
+
+        async function initializeProfile() {
+
+            await loadProfile();
+            await loadAvailableSkills();
+            await loadUserSkills();
+
+        }
+
+
+        initializeProfile();
+
     </script>
-    <script>lucide.createIcons();</script>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
 </body>
 </html>
