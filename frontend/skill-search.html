@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Skill Search - Campus Skill Exchange</title>
+
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+            <h2>
+                <i data-lucide="graduation-cap"></i>
+                SkillExchange
+            </h2>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="/dashboard.html">
+                <i data-lucide="layout-dashboard"></i>
+                Dashboard
+            </a>
+
+            <a href="/discover.html" class="active">
+                <i data-lucide="search"></i>
+                Discover
+            </a>
+
+            <a href="/skills.html">
+                <i data-lucide="book-open"></i>
+                My Skills
+            </a>
+
+            <a href="/matches.html">
+                <i data-lucide="target"></i>
+                Matches
+            </a>
+
+            <a href="/requests.html">
+                <i data-lucide="send"></i>
+                Exchange Requests
+            </a>
+
+            <a href="/sessions.html">
+                <i data-lucide="calendar"></i>
+                Sessions
+            </a>
+
+            <a href="/messages.html">
+                <i data-lucide="message-circle"></i>
+                Messages
+            </a>
+
+            <a href="/notifications.html">
+                <i data-lucide="bell"></i>
+                Notifications
+            </a>
+
+            <a href="/profile.html">
+                <i data-lucide="user"></i>
+                Profile
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" onclick="handleLogout()">
+                <i data-lucide="log-out"></i>
+                Logout
+            </a>
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <div class="page-header">
+            <h2>Find a Peer to Learn From</h2>
+
+            <p>
+                Search for a skill to find students who can teach it.
+            </p>
+        </div>
+
+
+        <!-- Skill Search Form -->
+
+        <div style="display:flex;gap:12px;margin-bottom:24px;">
+
+            <input
+                type="text"
+                id="skill-search"
+                placeholder="Search for a skill, e.g. Java, Python..."
+                style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;"
+                onkeydown="handleSearchKey(event)"
+            >
+
+            <button
+                class="btn btn-primary"
+                onclick="searchBySkill()"
+                style="width:auto;padding:10px 20px;"
+            >
+                <i data-lucide="search"></i>
+                Search
+            </button>
+
+        </div>
+
+
+        <!-- Search Status -->
+
+        <div id="search-status"></div>
+
+
+        <!-- Search Results -->
+
+        <div class="match-list" id="peer-list"></div>
+
+    </main>
+
+</div>
+
+
+<script src="/js/api.js"></script>
+
+<script>
+
+    // Check login
+    if (!isLoggedIn()) {
+        window.location.href = '/';
+    }
+
+
+    async function searchBySkill() {
+
+        const skill =
+            document.getElementById('skill-search').value.trim();
+
+        const container =
+            document.getElementById('peer-list');
+
+        const status =
+            document.getElementById('search-status');
+
+
+        // Empty search
+        if (!skill) {
+
+            status.innerHTML =
+                '<div class="loading">Please enter a skill to search.</div>';
+
+            container.innerHTML = '';
+
+            return;
+        }
+
+
+        // Loading state
+        status.innerHTML =
+            '<div class="loading">Searching for peers...</div>';
+
+        container.innerHTML = '';
+
+
+        try {
+
+            /*
+             * Existing API:
+             *
+             * GET /api/skills/search-teachers?q=Java
+             *
+             * apiRequest() automatically adds /api.
+             */
+
+            const response = await apiRequest(
+                'GET',
+                '/skills/search-teachers?q=' +
+                encodeURIComponent(skill)
+            );
+
+
+            const results = response.results || [];
+
+
+            // No matching skill
+            if (results.length === 0) {
+
+                status.innerHTML = `
+                    <div class="loading">
+                        No peers found who can teach "${skill}".
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            let totalTeachers = 0;
+
+
+            /*
+             * Each result contains:
+             *
+             * skill
+             * teachers[]
+             */
+
+            results.forEach(group => {
+
+                const teachers = group.teachers || [];
+
+                totalTeachers += teachers.length;
+
+
+                teachers.forEach(teacher => {
+
+                    container.innerHTML += `
+
+                        <div class="match-card">
+
+                            <div class="match-avatar">
+                                ${teacher.name
+                                    ? teacher.name.charAt(0).toUpperCase()
+                                    : '?'}
+                            </div>
+
+
+                            <div class="match-info">
+
+                                <h4>
+                                    ${escapeHtml(teacher.name)}
+                                </h4>
+
+                                <p>
+                                    ${escapeHtml(teacher.department)}
+                                    -
+                                    Year ${teacher.year}
+                                </p>
+
+                                <p>
+                                    <strong>Can Teach:</strong>
+                                    ${escapeHtml(group.skill.name)}
+                                </p>
+
+                                <p>
+                                    <strong>Proficiency:</strong>
+                                    ${escapeHtml(teacher.proficiency_level)}
+                                </p>
+
+                            </div>
+
+
+                            <div class="match-action">
+
+                                <!--
+                                    SCRUM-13 will connect this
+                                    action to the request screen.
+                                -->
+
+                                <button
+                                    class="btn btn-primary"
+                                    onclick="requestSession(
+                                        ${teacher.user_id},
+                                        ${group.skill.id}
+                                    )"
+                                    style="width:auto;padding:6px 16px;"
+                                >
+                                    Request Session
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    `;
+                });
+
+            });
+
+
+            // Safety check
+            if (totalTeachers === 0) {
+
+                status.innerHTML = `
+                    <div class="loading">
+                        No peers found who can teach "${skill}".
+                    </div>
+                `;
+
+                container.innerHTML = '';
+
+                return;
+            }
+
+
+            // Result count
+            status.innerHTML = `
+                <p style="margin-bottom:16px;">
+                    Found ${totalTeachers}
+                    ${totalTeachers === 1 ? 'peer' : 'peers'}
+                    who can teach "${escapeHtml(skill)}".
+                </p>
+            `;
+
+
+            lucide.createIcons();
+
+
+        } catch (error) {
+
+            console.error(
+                'Skill search failed:',
+                error
+            );
+
+            status.innerHTML =
+                '<div class="loading">Search failed. Please try again.</div>';
+
+            container.innerHTML = '';
+
+        }
+
+    }
+
+
+    // Search when Enter is pressed
+    function handleSearchKey(event) {
+
+        if (event.key === 'Enter') {
+            searchBySkill();
+        }
+
+    }
+
+
+    /*
+     * SCRUM-13 will implement the actual
+     * session request screen.
+     *
+     * For SCRUM-12, we only provide
+     * the action button.
+     */
+
+    function requestSession(teacherId, skillId) {
+
+        window.location.href =
+            `/session-request.html?peer_id=${teacherId}&skill_id=${skillId}`;
+
+    }
+
+
+    /*
+     * Prevent HTML from being interpreted
+     * when displaying API data.
+     */
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement('div');
+
+        div.textContent =
+            value ?? '';
+
+        return div.innerHTML;
+
+    }
+
+
+    function handleLogout() {
+
+        clearToken();
+
+        window.location.href = '/';
+
+    }
+
+
+    // Load Lucide icons
+    lucide.createIcons();
+
+</script>
+
+</body>
+</html>
