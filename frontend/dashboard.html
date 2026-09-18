@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i data-lucide="graduation-cap"></i> SkillExchange</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="active" id="nav-dashboard"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html" id="nav-discover"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html" id="nav-skills"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html" id="nav-matches"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html" id="nav-requests"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html" id="nav-sessions"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html" id="nav-messages"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html" id="nav-notifications"><i data-lucide="bell"></i> Notifications <span class="badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="/profile.html" id="nav-profile"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h2 id="welcome-text">Welcome back</h2>
+                <p id="welcome-sub">Find someone who can teach you what you want to learn.</p>
+            </div>
+            <div class="kpi-grid" id="kpi-grid"></div>
+            <div class="section">
+                <div class="section-header">
+                    <h3>Recommended Matches</h3>
+                    <a href="/matches.html">View all</a>
+                </div>
+                <div class="match-list" id="recommended-matches">
+                    <div class="loading">Loading matches...</div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <h3>Upcoming Sessions</h3>
+                    <a href="/sessions.html">View all</a>
+                </div>
+                <div class="session-list" id="upcoming-sessions">
+                    <div class="loading">Loading sessions...</div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <h3>Recent Activity</h3>
+                </div>
+                <div class="activity-list" id="recent-activity">
+                    <div class="loading">Loading activity...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script src="/js/dashboard.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

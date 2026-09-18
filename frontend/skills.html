@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Skills - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html" class="active"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html"><i data-lucide="bell"></i> Notifications</a>
+                <a href="/profile.html"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h2>My Skills</h2>
+                <p>Manage the skills you can teach and want to learn.</p>
+            </div>
+            <div style="display:flex;gap:12px;margin-bottom:24px;">
+                <select id="add-skill" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;">
+                    <option value="">Select a skill...</option>
+                </select>
+                <select id="add-type" style="padding:10px;border:1px solid var(--border);border-radius:8px;">
+                    <option value="TEACH">Can Teach</option>
+                    <option value="LEARN">Want to Learn</option>
+                </select>
+                <select id="add-level" style="padding:10px;border:1px solid var(--border);border-radius:8px;">
+                    <option value="BEGINNER">Beginner</option>
+                    <option value="INTERMEDIATE">Intermediate</option>
+                    <option value="ADVANCED">Advanced</option>
+                    <option value="EXPERT">Expert</option>
+                </select>
+                <button class="btn btn-primary" onclick="addSkill()" style="width:auto;padding:10px 20px;">Add Skill</button>
+            </div>
+            <div class="section">
+                <h3 style="margin-bottom:12px;">Skills I Can Teach</h3>
+                <div class="match-list" id="teach-list"></div>
+            </div>
+            <div class="section">
+                <h3 style="margin-bottom:12px;">Skills I Want to Learn</h3>
+                <div class="match-list" id="learn-list"></div>
+            </div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/';
+        let allSkills = [];
+        async function init() {
+            allSkills = await apiRequest('GET', '/skills');
+            const sel = document.getElementById('add-skill');
+            sel.innerHTML = '<option value="">Select a skill...</option>' + allSkills.map(s => `<option value="${s.id}">${s.name} (${s.category})</option>`).join('');
+            loadMySkills();
+        }
+        async function loadMySkills() {
+            const skills = await apiRequest('GET', '/skills/me');
+            document.getElementById('teach-list').innerHTML = skills.filter(s => s.skill_type === 'TEACH').map(s => `
+                <div class="match-card">
+                    <div class="match-info"><h4>${s.skill_name}</h4><p>${s.proficiency_level}</p></div>
+                    <button class="btn btn-primary" onclick="removeSkill(${s.id})" style="width:auto;padding:6px 12px;background:var(--danger);">Remove</button>
+                </div>
+            `).join('') || '<div class="loading">No skills added yet</div>';
+            document.getElementById('learn-list').innerHTML = skills.filter(s => s.skill_type === 'LEARN').map(s => `
+                <div class="match-card">
+                    <div class="match-info"><h4>${s.skill_name}</h4><p>${s.proficiency_level}</p></div>
+                    <button class="btn btn-primary" onclick="removeSkill(${s.id})" style="width:auto;padding:6px 12px;background:var(--danger);">Remove</button>
+                </div>
+            `).join('') || '<div class="loading">No skills added yet</div>';
+        }
+        async function addSkill() {
+            const skillId = document.getElementById('add-skill').value;
+            const type = document.getElementById('add-type').value;
+            const level = document.getElementById('add-level').value;
+            if (!skillId) return alert('Select a skill');
+            try { await apiRequest('POST', '/skills', { skill_id: parseInt(skillId), skill_type: type, proficiency_level: level }); loadMySkills(); } catch(e) { alert(e.message); }
+        }
+        async function removeSkill(id) {
+            try { await apiRequest('DELETE', '/skills/' + id); loadMySkills(); } catch(e) { alert(e.message); }
+        }
+        function handleLogout() { clearToken(); window.location.href = '/'; }
+        init();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

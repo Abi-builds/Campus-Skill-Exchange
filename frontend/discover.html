@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html" class="active"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html"><i data-lucide="bell"></i> Notifications</a>
+                <a href="/profile.html"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Discover Students</h2>
+                <p>Search for students by name, department, or year.</p>
+            </div>
+            <div style="display:flex;gap:12px;margin-bottom:24px;">
+                <input type="text" id="search-name" placeholder="Search by name..." style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;">
+                <select id="search-dept" style="padding:10px;border:1px solid var(--border);border-radius:8px;">
+                    <option value="">All Departments</option>
+                    <option value="IT">IT</option>
+                    <option value="CSE">CSE</option>
+                    <option value="ECE">ECE</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Electrical">Electrical</option>
+                </select>
+                <select id="search-year" style="padding:10px;border:1px solid var(--border);border-radius:8px;">
+                    <option value="">All Years</option>
+                    <option value="1">Year 1</option>
+                    <option value="2">Year 2</option>
+                    <option value="3">Year 3</option>
+                    <option value="4">Year 4</option>
+                </select>
+                <button class="btn btn-primary" onclick="searchUsers()" style="width:auto;padding:10px 20px;">Search</button>
+            </div>
+            <div class="match-list" id="user-list"></div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/';
+        async function searchUsers() {
+            const name = document.getElementById('search-name').value;
+            const dept = document.getElementById('search-dept').value;
+            const year = document.getElementById('search-year').value;
+            const params = new URLSearchParams();
+            if (name) params.set('name', name);
+            if (dept) params.set('department', dept);
+            if (year) params.set('year', year);
+            try {
+                const users = await apiRequest('GET', '/users/search?' + params.toString());
+                const container = document.getElementById('user-list');
+                container.innerHTML = users.map(u => `
+                    <div class="match-card">
+                        <div class="match-avatar">${u.name.charAt(0)}</div>
+                        <div class="match-info">
+                            <h4>${u.name}</h4>
+                            <p>${u.department} - Year ${u.year} | ${u.bio || 'No bio'}</p>
+                        </div>
+                        <div class="match-action">
+                            <button class="btn btn-primary" onclick="sendRequest(${u.id})" style="width:auto;padding:6px 16px;">Connect</button>
+                        </div>
+                    </div>
+                `).join('') || '<div class="loading">No students found</div>';
+            } catch (err) {
+                document.getElementById('user-list').innerHTML = '<div class="loading">Search failed</div>';
+            }
+        }
+        async function sendRequest(receiverId) {
+            try { await apiRequest('POST', '/exchange-requests', { receiver_id: receiverId, message: 'Let us exchange skills!' }); alert('Request sent!'); } catch(e) { alert(e.message); }
+        }
+        function handleLogout() { clearToken(); window.location.href = '/'; }
+        searchUsers();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

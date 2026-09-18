@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html" class="active"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html"><i data-lucide="bell"></i> Notifications</a>
+                <a href="/profile.html"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Sessions</h2>
+                <p>View and manage your learning sessions.</p>
+            </div>
+            <div class="section">
+                <h3 style="margin-bottom:12px;">Upcoming</h3>
+                <div class="session-list" id="upcoming"><div class="loading">Loading...</div></div>
+            </div>
+            <div class="section">
+                <h3 style="margin-bottom:12px;">Past Sessions</h3>
+                <div class="session-list" id="past"><div class="loading">Loading...</div></div>
+            </div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/';
+        async function loadSessions() {
+            try {
+                const sessions = await apiRequest('GET', '/sessions');
+                const upcoming = sessions.filter(s => s.status === 'SCHEDULED');
+                const past = sessions.filter(s => s.status !== 'SCHEDULED');
+                document.getElementById('upcoming').innerHTML = upcoming.map(s => `
+                    <div class="session-card">
+                        <div class="session-icon"><i data-lucide="calendar"></i></div>
+                        <div class="session-info">
+                            <h4>Session #${s.id}</h4>
+                            <p>${new Date(s.scheduled_at).toLocaleString()} | ${s.duration_minutes} min</p>
+                            <p style="font-size:11px;color:var(--text-muted);">Teacher: #${s.teacher_id} | Learner: #${s.learner_id}</p>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-primary" onclick="completeSession(${s.id})" style="width:auto;padding:6px 12px;background:var(--success);">Complete</button>
+                            <button class="btn btn-primary" onclick="cancelSession(${s.id})" style="width:auto;padding:6px 12px;background:var(--danger);">Cancel</button>
+                        </div>
+                    </div>
+                `).join('') || '<div class="loading">No upcoming sessions</div>';
+                document.getElementById('past').innerHTML = past.map(s => `
+                    <div class="session-card">
+                        <div class="session-icon" style="background:#f1f5f9;color:var(--text-muted);"><i data-lucide="check-circle"></i></div>
+                        <div class="session-info">
+                            <h4>Session #${s.id}</h4>
+                            <p>${s.status} | ${new Date(s.scheduled_at).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `).join('') || '<div class="loading">No past sessions</div>';
+                lucide.createIcons();
+            } catch (err) { console.error(err); }
+        }
+        async function completeSession(id) { try { await apiRequest('PATCH', '/sessions/' + id + '/complete'); loadSessions(); } catch(e) { alert(e.message); } }
+        async function cancelSession(id) { try { await apiRequest('PATCH', '/sessions/' + id + '/cancel'); loadSessions(); } catch(e) { alert(e.message); } }
+        function handleLogout() { clearToken(); window.location.href = '/'; }
+        loadSessions();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
