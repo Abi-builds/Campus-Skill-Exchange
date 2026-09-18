@@ -5,10 +5,5 @@ A collaborative platform that enables students to share, learn, and exchange ski
 
 
 
-
-\## Hello, world!
-
-
-
-This is my first Jira-to-GitHub workflow.
+This is our first Jira-to-GitHub workflow.
 
