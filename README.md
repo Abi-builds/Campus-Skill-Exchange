@@ -30,3 +30,8 @@ Campus-Skill-Exchange/
 ├── db/             # Database schema
 ├── src/            # Supporting application modules
 └── README.md
+```
+
+## Hello, world!
+
+This is a sample section added via Jira task SCRUM-4.
