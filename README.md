@@ -1,9 +1,32 @@
 # Campus-Skill-Exchange
 
-A collaborative platform that enables students to share, learn, and exchange skills with other students on campus.
+A web-based platform that enables students to connect with each other, share skills, and learn new skills through peer-to-peer skill exchange.
 
+## Features
 
+- Student registration and login
+- Student profile management
+- Add skills to teach and learn
+- Skill search and discovery
+- Skill-based student matching
+- Exchange requests and sessions
+- Messaging and notifications
+- Reviews and ratings
 
+## Tech Stack
 
-This is our first Jira-to-GitHub workflow.
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Python, FastAPI
+- **Database:** SQLite
+- **API Documentation:** Swagger / OpenAPI
+- **Version Control:** Git & GitHub
 
+## Project Structure
+
+```text
+Campus-Skill-Exchange/
+├── backend/        # FastAPI backend
+├── frontend/       # Frontend pages
+├── db/             # Database schema
+├── src/            # Supporting application modules
+└── README.md
