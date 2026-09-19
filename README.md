@@ -21,7 +21,7 @@ A web-based platform that enables students to connect with each other, share ski
 - **API Documentation:** Swagger / OpenAPI
 - **Version Control:** Git & GitHub
 
-## Project Structure
+## Project Structure:
 
 ```text
 Campus-Skill-Exchange/
