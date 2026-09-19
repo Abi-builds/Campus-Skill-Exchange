@@ -1,4 +1,4 @@
-# Campus-Skill-Exchange
+# Campus-Skill-Exchange Platform
 
 A web-based platform that enables students to connect with each other, share skills, and learn new skills through peer-to-peer skill exchange
 
