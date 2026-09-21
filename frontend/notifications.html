@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html" class="active"><i data-lucide="bell"></i> Notifications</a>
+                <a href="/profile.html"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header"><h2>Notifications</h2><p>Your recent notifications.</p></div>
+            <div class="activity-list" id="notif-list"><div class="loading">Loading...</div></div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/';
+        async function loadNotifications() {
+            try {
+                const notifs = await apiRequest('GET', '/notifications');
+                const container = document.getElementById('notif-list');
+                if (notifs.length === 0) { container.innerHTML = '<div class="loading">No notifications</div>'; return; }
+                container.innerHTML = notifs.map(n => `
+                    <div class="activity-item" style="${n.is_read ? '' : 'background:#eef2ff;border-color:#c7d2fe;'}">
+                        <i data-lucide="${n.is_read ? 'bell' : 'bell-ring'}"></i>
+                        <div>
+                            <strong>${n.title}</strong>
+                            <p style="font-size:12px;color:var(--text-muted);">${n.message}</p>
+                        </div>
+                        <span class="time">${new Date(n.created_at).toLocaleDateString()}</span>
+                        ${!n.is_read ? `<button onclick="markRead(${n.id})" style="background:none;border:none;cursor:pointer;color:var(--primary);font-size:12px;">Mark read</button>` : ''}
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { document.getElementById('notif-list').innerHTML = '<div class="loading">Failed to load</div>'; }
+        }
+        async function markRead(id) { try { await apiRequest('PATCH', '/notifications/' + id + '/read'); loadNotifications(); } catch(e) {} }
+        function handleLogout() { clearToken(); window.location.href = '/'; }
+        loadNotifications();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

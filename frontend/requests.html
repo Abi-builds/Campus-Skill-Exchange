@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Requests - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html" class="active"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html"><i data-lucide="bell"></i> Notifications</a>
+                <a href="/profile.html"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Exchange Requests</h2>
+                <p>Manage your skill exchange requests.</p>
+            </div>
+            <div class="match-list" id="requests-list"><div class="loading">Loading requests...</div></div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/';
+        let currentUser = null;
+        async function init() {
+            currentUser = await apiRequest('GET', '/auth/me');
+            loadRequests();
+        }
+        async function loadRequests() {
+            try {
+                const requests = await apiRequest('GET', '/exchange-requests');
+                const container = document.getElementById('requests-list');
+                if (requests.length === 0) { container.innerHTML = '<div class="loading">No exchange requests</div>'; return; }
+                container.innerHTML = requests.map(r => {
+                    const isSender = r.sender_id === currentUser.id;
+                    const otherId = isSender ? r.receiver_id : r.sender_id;
+                    return `
+                    <div class="match-card">
+                        <div class="match-avatar">${isSender ? 'To' : 'Fr'}</div>
+                        <div class="match-info">
+                            <h4>${isSender ? 'To User #' + otherId : 'From User #' + otherId}</h4>
+                            <p>${r.message || 'No message'}</p>
+                            <p style="font-size:11px;color:var(--text-muted);">Status: ${r.status} | ${new Date(r.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div class="match-action" style="display:flex;gap:8px;">
+                            ${r.status === 'PENDING' && !isSender ? `<button class="btn btn-primary" onclick="acceptRequest(${r.id})" style="width:auto;padding:6px 12px;background:var(--success);">Accept</button>` : ''}
+                            ${r.status === 'PENDING' && !isSender ? `<button class="btn btn-primary" onclick="rejectRequest(${r.id})" style="width:auto;padding:6px 12px;background:var(--danger);">Reject</button>` : ''}
+                            ${r.status === 'PENDING' && isSender ? `<button class="btn btn-primary" onclick="cancelRequest(${r.id})" style="width:auto;padding:6px 12px;background:var(--warning);">Cancel</button>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (err) { document.getElementById('requests-list').innerHTML = '<div class="loading">Failed to load</div>'; }
+        }
+        async function acceptRequest(id) { try { await apiRequest('PATCH', '/exchange-requests/' + id + '/accept'); loadRequests(); } catch(e) { alert(e.message); } }
+        async function rejectRequest(id) { try { await apiRequest('PATCH', '/exchange-requests/' + id + '/reject'); loadRequests(); } catch(e) { alert(e.message); } }
+        async function cancelRequest(id) { try { await apiRequest('PATCH', '/exchange-requests/' + id + '/cancel'); loadRequests(); } catch(e) { alert(e.message); } }
+        function handleLogout() { clearToken(); window.location.href = '/'; }
+        init();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

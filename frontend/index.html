@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <i data-lucide="graduation-cap" class="login-icon"></i>
+                    <h1>Campus Skill Exchange</h1>
+                    <p>Connect with students. Exchange skills. Learn together.</p>
+                </div>
+                <div id="login-form" class="login-form">
+                    <h2>Sign In</h2>
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Your password">
+                    </div>
+                    <button id="login-btn" class="btn btn-primary" onclick="handleLogin()">Sign In</button>
+                    <p class="switch-text">Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+                </div>
+                <div id="register-form" class="login-form" style="display:none;">
+                    <h2>Create Account</h2>
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-department">Department</label>
+                        <select id="reg-department">
+                            <option value="IT">IT</option>
+                            <option value="CSE">CSE</option>
+                            <option value="ECE">ECE</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Electrical">Electrical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-year">Year</label>
+                        <select id="reg-year">
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" placeholder="Choose a password">
+                    </div>
+                    <button id="register-btn" class="btn btn-primary" onclick="handleRegister()">Create Account</button>
+                    <p class="switch-text">Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
+                </div>
+                <div id="auth-error" class="error-message" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

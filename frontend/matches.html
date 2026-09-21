@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches - Campus Skill Exchange</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2><i data-lucide="graduation-cap"></i> SkillExchange</h2></div>
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="/discover.html"><i data-lucide="search"></i> Discover</a>
+                <a href="/skills.html"><i data-lucide="book-open"></i> My Skills</a>
+                <a href="/matches.html" class="active"><i data-lucide="target"></i> Matches</a>
+                <a href="/requests.html"><i data-lucide="send"></i> Exchange Requests</a>
+                <a href="/sessions.html"><i data-lucide="calendar"></i> Sessions</a>
+                <a href="/messages.html"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="/notifications.html"><i data-lucide="bell"></i> Notifications</a>
+                <a href="/profile.html"><i data-lucide="user"></i> Profile</a>
+            </nav>
+            <div class="sidebar-footer"><a href="#" onclick="handleLogout()"><i data-lucide="log-out"></i> Logout</a></div>
+        </aside>
+        <main class="main-content">
+            <div class="page-header">
+                <h2>Your Matches</h2>
+                <p>Students whose skills complement yours.</p>
+            </div>
+            <div class="match-list" id="matches-list"><div class="loading">Loading matches...</div></div>
+        </main>
+    </div>
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) window.location.href = '/';
+        async function loadMatches() {
+            try {
+                const matches = await apiRequest('GET', '/matches');
+                const container = document.getElementById('matches-list');
+                if (matches.length === 0) { container.innerHTML = '<div class="loading">No matches found. Add more skills to your profile.</div>'; return; }
+                container.innerHTML = matches.map(m => `
+                    <div class="match-card">
+                        <div class="match-avatar">${m.user.name.charAt(0)}</div>
+                        <div class="match-info">
+                            <h4>${m.user.name}</h4>
+                            <p>${m.user.department} - Year ${m.user.year}</p>
+                            <p style="font-size:11px;color:var(--text-muted);">${m.reasons.join(' | ')}</p>
+                        </div>
+                        <div class="match-score">${m.score}%</div>
+                        <div class="match-action">
+                            <button class="btn btn-primary" onclick="sendRequest(${m.user.id})" ${m.has_pending_request ? 'disabled' : ''} style="width:auto;padding:6px 16px;">
+                                ${m.has_pending_request ? 'Pending' : 'Connect'}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } catch (err) { document.getElementById('matches-list').innerHTML = '<div class="loading">Failed to load matches</div>'; }
+        }
+        async function sendRequest(receiverId) {
+            try { await apiRequest('POST', '/exchange-requests', { receiver_id: receiverId, message: 'Let us exchange skills!' }); loadMatches(); } catch(e) { alert(e.message); }
+        }
+        function handleLogout() { clearToken(); window.location.href = '/'; }
+        loadMatches();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
