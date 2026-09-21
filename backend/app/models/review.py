@@ -11,25 +11,45 @@ class Review(Base):
 
     session_id = Column(
         Integer,
-        ForeignKey("sessions.session_id", ondelete="CASCADE"),
+        ForeignKey("sessions.id", ondelete="CASCADE"),
         nullable=False
     )
 
     reviewer_id = Column(
         Integer,
-        ForeignKey("profiles.profile_id", ondelete="CASCADE"),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
 
     reviewed_user_id = Column(
         Integer,
-        ForeignKey("profiles.profile_id", ondelete="CASCADE"),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
 
     rating = Column(Integer, nullable=False)
 
     comment = Column(Text, nullable=True)
+
+    # Relationship with Session
+    session = relationship(
+        "Session",
+        back_populates="reviews"
+    )
+
+    # Relationship with User who gave the review
+    reviewer = relationship(
+        "User",
+        foreign_keys=[reviewer_id],
+        back_populates="reviews_given"
+    )
+
+    # Relationship with User who received the review
+    reviewed_user = relationship(
+        "User",
+        foreign_keys=[reviewed_user_id],
+        back_populates="reviews_received"
+    )
 
     __table_args__ = (
         CheckConstraint(
