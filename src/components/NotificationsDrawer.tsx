@@ -102,7 +102,9 @@ export const NotificationsDrawer: React.FC = () => {
                   <p className="text-xs text-slate-600 mt-1 leading-relaxed">{notif.message}</p>
                   <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                     <span className="font-medium text-slate-700">From: {notif.senderName}</span>
-                    <span className="font-mono text-[10px] text-slate-400">ID: {notif.requestId.slice(0, 12)}</span>
+                    {notif.requestId && (
+                      <span className="font-mono text-[10px] text-slate-400">ID: {notif.requestId.slice(0, 12)}</span>
+                    )}
                   </div>
                 </div>
               ))

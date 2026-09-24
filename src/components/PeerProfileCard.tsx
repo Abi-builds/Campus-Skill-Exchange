@@ -113,7 +113,7 @@ export const PeerProfileCard: React.FC<Props> = ({ peer }) => {
                 className="inline-flex items-center gap-1 bg-amber-50 text-amber-800 border border-amber-200/70 text-xs font-semibold px-3 py-1 rounded-full shadow-2xs"
               >
                 <Sparkles size={11} className="text-amber-600" />
-                {badge}
+                {badge.name}
               </span>
             ))}
           </div>

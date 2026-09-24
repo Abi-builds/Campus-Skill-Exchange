@@ -1,74 +1,105 @@
 # Campus Skill Exchange Platform — Scrum 7
 
-## Project Overview
-- **Team**: Scrum Team No. 7
-- **Project Title**: Campus Skill Exchange Platform
-- **Module / Story ID**: `SCRUM07-F002-UI-002`
-- **User Story**: *As a student, I want to send a learning-session request to a matched peer, so that we can arrange to connect.*
-- **Description**: Request form/action on a peer's profile with an optional message.
-- **Business Value**: Converts discovery into an actual peer-learning connection.
-- **Definition of Done**: Screen implemented and tested.
+A complete peer-to-peer web platform where campus students list the skills they can teach and want to learn, search for eligible peers, arrange collaborative learning sessions, submit post-session ratings and feedback, and earn verified skill badges.
 
 ---
 
-## Scrum 7 Team Members
-| Register Number | Student Name |
-| :--- | :--- |
-| 2024506117 | Abinaya K |
-| 2024506129 | Hasiba Aisha I |
-| 2024506107 | Keerthivasan U |
-| 2024506308 | Mohanvel V |
-| 2024506043 | Kaviyun Ajees B |
-| 2024506007 | Kaviya R |
-| 2024506314 | Vishwa M |
-| 2024506017 | Nivetha G |
-| 2024506312 | Santhosh G |
-| 2024506021 | Suryarishi R |
+## 👥 Scrum 7 Team Members
+| Register Number | Student Name | Assigned Role / Module Area |
+| :--- | :--- | :--- |
+| **2024506117** | **Abinaya K** | Frontend / Session Requests (`F002-UI-002`) |
+| **2024506129** | **Hasiba Aisha I** | Database & Backend (`F001-DB-001`, `F001-BE-001`) |
+| **2024506107** | **Keerthivasan U** | Peer Search Engine (`F002-UI-001`, `F002-BE-001`) |
+| **2024506308** | **Mohanvel V** | Ratings & Reviews (`F003-UI-001`, `F003-BE-001`) |
+| **2024506043** | **Kaviyun Ajees B** | Skill Badges Engine (`F003-UI-002`, `F003-BE-002`) |
+| **2024506007** | **Kaviya R** | Profile Management (`F001-UI-001`) |
+| **2024506314** | **Vishwa M** | Session Workflow Engine (`F002-BE-002`, `F002-DB-001`) |
+| **2024506017** | **Nivetha G** | Data Store & Badges Schema (`F003-DB-001`) |
+| **2024506312** | **Santhosh G** | End-to-End Integration & Testing (`E2E-001`) |
+| **2024506021** | **Suryarishi R** | Security, Validation & Quality Assurance |
 
 ---
 
-## Acceptance Criteria (AC) Verification
+## 📋 Comprehensive Backlog & Feature Implementation
 
-### **AC1: Request Creation with 'Pending' Status & Notification**
-> *Given a student sends a session request to an eligible peer, when submitted, then the request is created with status 'Pending' and the recipient is notified.*
-- **Implementation**:
-  - Student views matched peer profile card with skills, ratings, badges, and bio.
-  - Clicks **"Request Learning Session"** to open modal.
-  - Chooses skill, preferred date & time slot, session mode (in-person campus venue / online meet), and writes an **optional message**.
-  - On submit, request is created with `status: 'Pending'`.
-  - Recipient gets an in-app notification and unread badge count on the notification bell.
-
-### **AC2: Recipient Acceptance & 'Accepted' Status Update**
-> *Given the recipient accepts, when processed, then both students see the request status change to 'Accepted'.*
-- **Implementation**:
-  - Evaluators can easily switch active persona to the recipient (e.g. *Keerthivasan U*) using the top navigation switcher.
-  - In the **"Received by You"** tab, the recipient sees the pending request card, session details, and the optional message.
-  - Recipient clicks **"Accept Session (AC2)"**.
-  - Request status transitions to `'Accepted'` immediately.
-  - Both students see the updated `'Accepted'` badge with confirmed session details.
+### 1. Epic [SCRUM07-F001] Student Skill Profile
+- **`SCRUM07-F001-UI-001` Profile creation/edit screen**:
+  - Full modal form to manage student bio, department, academic year, campus availability, and dynamic chip-based lists for **'Can Teach'** and **'Want to Learn'**.
+  - **AC1**: Adding at least one skill saves and publishes the profile into the searchable registry.
+  - **AC2**: Attempting to save with 0 skills immediately displays a validation alert prompting the student to add at least one skill.
+- **`SCRUM07-F001-BE-001` Profile management API**:
+  - CRUD operations for student profiles and relational skill associations.
+- **`SCRUM07-F001-DB-001` Profile and skills data store**:
+  - Relational schema separating student core records from the `skills_table` with type indicators (`teach` | `learn`).
 
 ---
 
-## Tech Stack
-- **Frontend**: React 18 + Vite + TypeScript
+### 2. Epic [SCRUM07-F002] Peer Search & Matching
+- **`SCRUM07-F002-UI-001` Skill search screen**:
+  - Real-time search query box matching against peers' **'Can Teach'** skills catalog.
+  - Filter chips for popular campus skills (Python, Figma, React, System Design, SQL, etc.).
+  - Secondary filters for Department, Academic Year, and Minimum Star Rating (4.0+, 4.5+, 4.8+).
+  - **AC1**: When matching peers exist, responsive profile cards are listed with skill tags and compatibility match rate.
+  - **AC2**: When no peers teach the queried skill, a clean empty-state card is displayed with recommendations.
+- **`SCRUM07-F002-UI-002` Session request screen**:
+  - Interactive request modal on peer profile with skill picker, date/time slot, venue (campus library vs. Google Meet), and an **optional custom message**.
+  - **AC1**: Request submitted with status `'Pending'` and the recipient is immediately notified with an unread badge.
+  - **AC2**: Recipient accepts request, updating status to `'Accepted'` visible to both students.
+- **`SCRUM07-F002-BE-001` & `BE-002` Search & Session APIs**:
+  - Filters profiles by teach skills and manages request state transitions (`Pending` → `Accepted` → `Declined` → `Completed`).
+- **`SCRUM07-F002-DB-001` Session request data store**:
+  - Persists session requests table with timestamps, requester, recipient, mode, venue, and status.
+
+---
+
+### 3. Epic [SCRUM07-F003] Ratings, Feedback & Skill Badges
+- **`SCRUM07-F003-UI-001` Post-session rating & feedback screen**:
+  - Interactive 5-star rating control with hover feedback, quick compliment tags, and detailed comment input.
+  - **AC1**: When a session is marked complete, participant submits rating/feedback; recorded and linked to session and rated peer.
+  - **AC2**: Submitting rating for a non-completed session is strictly rejected by the business validation rule.
+- **`SCRUM07-F003-UI-002` Skill badges display on profile**:
+  - Showcase on student profile displaying verified badges with criteria met, unlock timestamps, and description.
+- **`SCRUM07-F003-BE-001` & `BE-002` Rating capture API & Badge award service**:
+  - Dynamically recalculates peer's average rating and total review counts.
+  - Evaluates student session history against defined badge criteria (*First Exchange*, *Top Mentor*, *Skill Pioneer*, *Knowledge Seeker*) and awards badges automatically upon threshold completion.
+- **`SCRUM07-F003-DB-001` Ratings and badges data store**:
+  - Persists reviews linked to sessions and badge awards linked to students.
+
+---
+
+### 4. [SCRUM07-E2E-001] Complete Student Journey
+- Seamless end-to-end journey verified:
+  1. Student creates/updates profile with skills to learn.
+  2. Searches and matches with peer who teaches the skill.
+  3. Sends session request with optional message (`Pending`).
+  4. Matched peer receives notification and accepts request (`Accepted`).
+  5. Session conducted and marked as `Completed`.
+  6. Student submits star rating and feedback.
+  7. Teaching peer automatically earns a verified campus skill badge!
+- **Exception Path**: If session request is declined, no completion or badge award occurs and requester is informed.
+
+---
+
+## 🛠️ Tech Stack & Architecture
+- **Frontend Framework**: React 18 + Vite + TypeScript
 - **Styling**: Tailwind CSS + Lucide React Icons
-- **State Management**: React Context + LocalStorage persistence
-- **Testing**: Vitest + React Testing Library + Jest-DOM matchers
+- **State & Data Store**: React Context + Relational LocalStorage Persistence Engine (`database.ts`)
+- **Testing**: Vitest + React Testing Library + `@testing-library/jest-dom`
 
 ---
 
-## Quick Start Guide
+## 🚀 How to Run Locally
 
 ### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Run the Development Server
+### 2. Start Development Server
 ```bash
 npm run dev
 ```
-Open your browser at `http://localhost:5173`.
+Open **`http://localhost:5173`** in your browser.
 
 ### 3. Run Automated Tests
 ```bash
@@ -82,56 +113,28 @@ npm run build
 
 ---
 
-## Git Push Instructions (Step-by-Step)
+## 🧪 Evaluation Guide for Faculty & Reviewers
+1. **Persona Switching**: Use the **"Active View"** dropdown in the top navigation to switch between any of the 10 Scrum 7 team members at any time.
+2. **Explore & Search Tab**: Type "Python" to find Keerthivasan, or type a random string to see the empty state.
+3. **Session Hub Tab**: Send a request, switch persona to the recipient, accept the request, mark as completed, and leave a 5-star rating.
+4. **My Profile Tab**: Test editing skills (try clearing all skills to trigger the AC2 validation error).
+5. **Badges Tab**: View the Campus Recognition Board and observe newly unlocked badges in real time.
+6. **E2E Journey Tab**: Follow the 6-step guided walkthrough to verify the full platform lifecycle.
 
-Follow these exact commands to push this codebase to your team's Git repository (GitHub / GitLab / Bitbucket):
+---
 
-### Step 1: Initialize Git Repository
-```bash
-git init
-```
+## 📦 Git Push Instructions
 
-### Step 2: Configure Your Git Identity (if not set)
-```bash
-git config user.name "Your Name"
-git config user.email "your.email@example.com"
-```
-
-### Step 3: Create and Switch to the Feature Branch
-```bash
-git checkout -b feature/SCRUM07-F002-UI-002-session-request
-```
-
-### Step 4: Stage All Files
-```bash
-git add .
-```
-
-### Step 5: Check Status
-```bash
+```powershell
+# 1. Check status
 git status
-```
 
-### Step 6: Commit the Changes
-```bash
-git commit -m "feat(UI-002): implement peer learning session request screen with AC1 and AC2 validation"
-```
+# 2. Stage all updates
+git add .
 
-### Step 7: Add Remote Repository URL
-Replace `<YOUR_REPO_URL>` with your team's Git URL (e.g., `https://github.com/your-org/campus-skill-exchange.git`):
-```bash
-git remote add origin <YOUR_REPO_URL>
-```
+# 3. Commit changes
+git commit -m "feat(scrum7): complete campus skill exchange platform with all epics F001, F002, F003 and E2E journey"
 
-### Step 8: Push Branch to Remote
-```bash
-git push -u origin feature/SCRUM07-F002-UI-002-session-request
-```
-
-### Step 9: (Optional) Merge to Main
-If you want to merge into `main` directly:
-```bash
-git checkout main
-git merge feature/SCRUM07-F002-UI-002-session-request
-git push origin main
+# 4. Push to remote
+git push origin feature/SCRUM07-F002-UI-002-session-request
 ```

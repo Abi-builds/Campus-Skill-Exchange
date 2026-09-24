@@ -3,30 +3,35 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React from 'react';
 import App from '../src/App';
 import { AppProvider } from '../src/context/AppContext';
-import { resetDemoData } from '../src/services/sessionService';
+import { db } from '../src/services/database';
 
 describe('Story ID: SCRUM07-F002-UI-002 - Peer Session Request Screen', () => {
   beforeEach(() => {
-    resetDemoData();
     localStorage.clear();
+    db.resetAll();
   });
 
-  it('renders peer profile screen with skills, badges, and "Request Learning Session" CTA', () => {
+  it('renders peer search results and opens request modal with optional message field', async () => {
     render(
       <AppProvider>
         <App />
       </AppProvider>
     );
 
-    // Verify Peer Profile is displayed
-    expect(screen.getByText(/Matched Peer Profile Screen/i)).toBeInTheDocument();
+    // Verify peer card is displayed
+    const peerCard = await screen.findByTestId('peer-card-user-2024506107');
+    expect(peerCard).toBeInTheDocument();
     expect(screen.getByText('Keerthivasan U')).toBeInTheDocument();
-    expect(screen.getByText('Data Structures & Algorithms')).toBeInTheDocument();
 
-    // Verify Primary Action Button
-    const requestBtn = screen.getByTestId('open-request-modal-button');
+    // Verify request session button
+    const requestBtn = screen.getByTestId('btn-request-session-user-2024506107');
     expect(requestBtn).toBeInTheDocument();
-    expect(requestBtn).toHaveTextContent(/Request Learning Session/i);
+    fireEvent.click(requestBtn);
+
+    // Verify modal is open with optional message input
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Request Learning Session/i })).toBeInTheDocument();
+    expect(screen.getByTestId('optional-message-input')).toBeInTheDocument();
   });
 
   it('AC1: sends request with optional message, creates request with status "Pending", and notifies recipient', async () => {
@@ -36,13 +41,9 @@ describe('Story ID: SCRUM07-F002-UI-002 - Peer Session Request Screen', () => {
       </AppProvider>
     );
 
-    // 1. Open request modal
-    const requestBtn = screen.getByTestId('open-request-modal-button');
+    // 1. Open request modal for Keerthivasan
+    const requestBtn = await screen.findByTestId('btn-request-session-user-2024506107');
     fireEvent.click(requestBtn);
-
-    // Verify modal is open
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /Request Learning Session/i })).toBeInTheDocument();
 
     // 2. Fill optional message
     const messageInput = screen.getByTestId('optional-message-input');
@@ -57,7 +58,14 @@ describe('Story ID: SCRUM07-F002-UI-002 - Peer Session Request Screen', () => {
     const submitBtn = screen.getByTestId('submit-request-button');
     fireEvent.click(submitBtn);
 
-    // 4. Verify request appears in "Sent by You" tab with status 'Pending' (AC1)
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    // 4. Switch to Sessions Hub tab to verify outgoing pending request (AC1)
+    const requestsTab = screen.getByTestId('nav-tab-requests');
+    fireEvent.click(requestsTab);
+
     await waitFor(() => {
       const badge = screen.getByTestId('status-badge-pending');
       expect(badge).toBeInTheDocument();
@@ -89,7 +97,7 @@ describe('Story ID: SCRUM07-F002-UI-002 - Peer Session Request Screen', () => {
     );
 
     // Step 1: Send request as Student A (Abinaya K)
-    const requestBtn = screen.getByTestId('open-request-modal-button');
+    const requestBtn = await screen.findByTestId('btn-request-session-user-2024506107');
     fireEvent.click(requestBtn);
 
     const messageInput = screen.getByTestId('optional-message-input');
@@ -101,29 +109,31 @@ describe('Story ID: SCRUM07-F002-UI-002 - Peer Session Request Screen', () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(screen.getByTestId('status-badge-pending')).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     // Step 2: Switch to recipient persona (Keerthivasan U)
     const personaSelect = screen.getByLabelText(/Active Student Persona/i);
     fireEvent.change(personaSelect, { target: { value: 'user-2024506107' } });
 
-    // Switch to "Received by You" tab
+    // Step 3: Navigate to Session Hub tab and click "Received by You"
+    const requestsTab = screen.getByTestId('nav-tab-requests');
+    fireEvent.click(requestsTab);
+
     const incomingTab = screen.getByTestId('tab-incoming-requests');
     fireEvent.click(incomingTab);
 
-    // Step 3: Recipient clicks "Accept Session"
+    // Step 4: Recipient clicks "Accept Session"
     const acceptBtn = await screen.findByRole('button', { name: /Accept Session/i });
     expect(acceptBtn).toBeInTheDocument();
     fireEvent.click(acceptBtn);
 
-    // Step 4: Verify status changes to 'Accepted' (AC2)
+    // Step 5: Verify status changes to 'Accepted' (AC2)
     await waitFor(() => {
       expect(screen.getByTestId('status-badge-accepted')).toBeInTheDocument();
     });
-    expect(screen.getByText(/Session Accepted!/i)).toBeInTheDocument();
 
-    // Step 5: Switch back to requester (Abinaya K) and verify they also see 'Accepted'
+    // Step 6: Switch back to requester (Abinaya K) and verify they also see 'Accepted'
     fireEvent.change(personaSelect, { target: { value: 'user-2024506117' } });
     const outgoingTab = screen.getByTestId('tab-outgoing-requests');
     fireEvent.click(outgoingTab);

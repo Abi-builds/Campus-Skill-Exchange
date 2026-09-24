@@ -1,49 +1,5 @@
-import { AppNotification, SessionRequest, SessionStatus } from '../types';
-
-const STORAGE_KEY_REQUESTS = 'campus_skill_exchange_requests';
-const STORAGE_KEY_NOTIFS = 'campus_skill_exchange_notifications';
-
-// Helper to load requests from localStorage
-export const getStoredRequests = (): SessionRequest[] => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_REQUESTS);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error('Failed reading requests from localStorage', err);
-    return [];
-  }
-};
-
-// Helper to save requests
-export const saveRequests = (requests: SessionRequest[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY_REQUESTS, JSON.stringify(requests));
-  } catch (err) {
-    console.error('Failed saving requests to localStorage', err);
-  }
-};
-
-// Helper to load notifications
-export const getStoredNotifications = (): AppNotification[] => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_NOTIFS);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch (err) {
-    console.error('Failed reading notifications', err);
-    return [];
-  }
-};
-
-// Helper to save notifications
-export const saveNotifications = (notifs: AppNotification[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY_NOTIFS, JSON.stringify(notifs));
-  } catch (err) {
-    console.error('Failed saving notifications', err);
-  }
-};
+import { AppNotification, SessionRequest } from '../types';
+import { db } from './database';
 
 export interface CreateRequestPayload {
   requesterId: string;
@@ -60,152 +16,181 @@ export interface CreateRequestPayload {
 }
 
 /**
- * Story ID: SCRUM07-F002-UI-002
- * AC1: Creates session request with status 'Pending' and notifies recipient.
+ * Story ID: SCRUM07-F002-BE-002
+ * Story ID: SCRUM07-F002-DB-001
+ * Session request workflow API: Create, Accept, Decline, and Complete.
  */
-export const createSessionRequest = async (
-  payload: CreateRequestPayload
-): Promise<{ request: SessionRequest; notification: AppNotification }> => {
-  // Simulate network latency (250ms)
-  await new Promise((res) => setTimeout(res, 250));
+export const sessionService = {
+  getRequests: async (): Promise<SessionRequest[]> => {
+    return db.getRequests();
+  },
 
-  const newRequest: SessionRequest = {
-    id: `req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-    requesterId: payload.requesterId,
-    requesterName: payload.requesterName,
-    requesterRegNo: payload.requesterRegNo,
-    peerId: payload.peerId,
-    peerName: payload.peerName,
-    skill: payload.skill,
-    preferredDate: payload.preferredDate,
-    preferredTime: payload.preferredTime,
-    sessionMode: payload.sessionMode,
-    locationOrLink:
-      payload.sessionMode === 'in_person'
-        ? payload.locationOrLink || 'Central Campus Library, 2nd Floor'
-        : 'https://meet.google.com/skill-exchange-demo',
-    optionalMessage: payload.optionalMessage?.trim() || undefined,
-    status: 'Pending', // AC1 requirement
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  createSessionRequest: async (
+    payload: CreateRequestPayload
+  ): Promise<{ request: SessionRequest; notification: AppNotification }> => {
+    const newRequest: SessionRequest = {
+      id: `req-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      requesterId: payload.requesterId,
+      requesterName: payload.requesterName,
+      requesterRegNo: payload.requesterRegNo,
+      peerId: payload.peerId,
+      peerName: payload.peerName,
+      skill: payload.skill,
+      preferredDate: payload.preferredDate,
+      preferredTime: payload.preferredTime,
+      sessionMode: payload.sessionMode,
+      locationOrLink:
+        payload.sessionMode === 'in_person'
+          ? payload.locationOrLink || 'Central Campus Library, 2nd Floor'
+          : 'https://meet.google.com/skill-exchange-demo',
+      optionalMessage: payload.optionalMessage?.trim() || undefined,
+      status: 'Pending', // AC1
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isRated: false,
+    };
 
-  const requests = getStoredRequests();
-  requests.unshift(newRequest);
-  saveRequests(requests);
+    const requests = db.getRequests();
+    requests.unshift(newRequest);
+    db.saveRequests(requests);
 
-  // Create notification for recipient (AC1 requirement)
-  const newNotification: AppNotification = {
-    id: `notif-${Date.now()}`,
-    recipientId: payload.peerId,
-    senderName: payload.requesterName,
-    title: 'New Learning Session Request',
-    message: `${payload.requesterName} sent you a session request for "${payload.skill}".`,
-    type: 'session_request',
-    requestId: newRequest.id,
-    read: false,
-    createdAt: new Date().toISOString(),
-  };
+    // Notification for recipient (AC1)
+    const newNotification: AppNotification = {
+      id: `notif-${Date.now()}`,
+      recipientId: payload.peerId,
+      senderName: payload.requesterName,
+      title: 'New Learning Session Request',
+      message: `${payload.requesterName} sent you a learning-session request for "${payload.skill}".`,
+      type: 'session_request',
+      requestId: newRequest.id,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
 
-  const notifications = getStoredNotifications();
-  notifications.unshift(newNotification);
-  saveNotifications(notifications);
+    const notifications = db.getNotifications();
+    notifications.unshift(newNotification);
+    db.saveNotifications(notifications);
 
-  return { request: newRequest, notification: newNotification };
-};
+    return { request: newRequest, notification: newNotification };
+  },
 
-/**
- * Story ID: SCRUM07-F002-UI-002
- * AC2: Recipient accepts request, updating status to 'Accepted' visible to both students.
- */
-export const acceptSessionRequest = async (
-  requestId: string,
-  peerName: string
-): Promise<SessionRequest> => {
-  await new Promise((res) => setTimeout(res, 250));
+  acceptSessionRequest: async (
+    requestId: string,
+    peerName: string
+  ): Promise<SessionRequest> => {
+    const requests = db.getRequests();
+    const index = requests.findIndex((r) => r.id === requestId);
+    if (index === -1) throw new Error(`Request ${requestId} not found.`);
 
-  const requests = getStoredRequests();
-  const index = requests.findIndex((r) => r.id === requestId);
-  if (index === -1) {
-    throw new Error(`Session request ${requestId} not found`);
-  }
+    const updated: SessionRequest = {
+      ...requests[index],
+      status: 'Accepted', // AC2
+      updatedAt: new Date().toISOString(),
+    };
 
-  const updated: SessionRequest = {
-    ...requests[index],
-    status: 'Accepted', // AC2 requirement
-    updatedAt: new Date().toISOString(),
-  };
+    requests[index] = updated;
+    db.saveRequests(requests);
 
-  requests[index] = updated;
-  saveRequests(requests);
+    // Notify requester (AC2)
+    const notif: AppNotification = {
+      id: `notif-${Date.now()}`,
+      recipientId: updated.requesterId,
+      senderName: peerName,
+      title: 'Session Request Accepted! 🎉',
+      message: `${peerName} accepted your session request for "${updated.skill}".`,
+      type: 'session_accepted',
+      requestId: updated.id,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
 
-  // Notify requester that request was accepted
-  const newNotification: AppNotification = {
-    id: `notif-${Date.now()}`,
-    recipientId: updated.requesterId,
-    senderName: peerName,
-    title: 'Session Request Accepted! 🎉',
-    message: `${peerName} accepted your session request for "${updated.skill}".`,
-    type: 'session_accepted',
-    requestId: updated.id,
-    read: false,
-    createdAt: new Date().toISOString(),
-  };
+    const notifications = db.getNotifications();
+    notifications.unshift(notif);
+    db.saveNotifications(notifications);
 
-  const notifications = getStoredNotifications();
-  notifications.unshift(newNotification);
-  saveNotifications(notifications);
+    return updated;
+  },
 
-  return updated;
-};
+  declineSessionRequest: async (
+    requestId: string,
+    peerName: string
+  ): Promise<SessionRequest> => {
+    const requests = db.getRequests();
+    const index = requests.findIndex((r) => r.id === requestId);
+    if (index === -1) throw new Error(`Request ${requestId} not found.`);
 
-/**
- * Decline a session request
- */
-export const declineSessionRequest = async (
-  requestId: string,
-  peerName: string
-): Promise<SessionRequest> => {
-  await new Promise((res) => setTimeout(res, 250));
+    const updated: SessionRequest = {
+      ...requests[index],
+      status: 'Declined',
+      updatedAt: new Date().toISOString(),
+    };
 
-  const requests = getStoredRequests();
-  const index = requests.findIndex((r) => r.id === requestId);
-  if (index === -1) {
-    throw new Error(`Session request ${requestId} not found`);
-  }
+    requests[index] = updated;
+    db.saveRequests(requests);
 
-  const updated: SessionRequest = {
-    ...requests[index],
-    status: 'Declined',
-    updatedAt: new Date().toISOString(),
-  };
+    const notif: AppNotification = {
+      id: `notif-${Date.now()}`,
+      recipientId: updated.requesterId,
+      senderName: peerName,
+      title: 'Session Request Declined',
+      message: `${peerName} could not accept your session request for "${updated.skill}".`,
+      type: 'session_declined',
+      requestId: updated.id,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
 
-  requests[index] = updated;
-  saveRequests(requests);
+    const notifications = db.getNotifications();
+    notifications.unshift(notif);
+    db.saveNotifications(notifications);
 
-  const newNotification: AppNotification = {
-    id: `notif-${Date.now()}`,
-    recipientId: updated.requesterId,
-    senderName: peerName,
-    title: 'Session Request Declined',
-    message: `${peerName} could not accept your session request for "${updated.skill}".`,
-    type: 'session_declined',
-    requestId: updated.id,
-    read: false,
-    createdAt: new Date().toISOString(),
-  };
+    return updated;
+  },
 
-  const notifications = getStoredNotifications();
-  notifications.unshift(newNotification);
-  saveNotifications(notifications);
+  /**
+   * Completes an accepted session, enabling rating & feedback (SCRUM07-F003 trigger)
+   */
+  completeSession: async (
+    requestId: string,
+    actionUser: string
+  ): Promise<SessionRequest> => {
+    const requests = db.getRequests();
+    const index = requests.findIndex((r) => r.id === requestId);
+    if (index === -1) throw new Error(`Request ${requestId} not found.`);
 
-  return updated;
-};
+    if (requests[index].status !== 'Accepted') {
+      throw new Error('Only accepted sessions can be marked as completed.');
+    }
 
-/**
- * Clear data helper for clean testing / demonstration reset
- */
-export const resetDemoData = (): void => {
-  localStorage.removeItem(STORAGE_KEY_REQUESTS);
-  localStorage.removeItem(STORAGE_KEY_NOTIFS);
+    const updated: SessionRequest = {
+      ...requests[index],
+      status: 'Completed',
+      completedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    requests[index] = updated;
+    db.saveRequests(requests);
+
+    // Notify both participants that session is complete and ready for feedback
+    const otherUserId =
+      actionUser === updated.requesterId ? updated.peerId : updated.requesterId;
+    const notif: AppNotification = {
+      id: `notif-${Date.now()}`,
+      recipientId: otherUserId,
+      senderName: 'Campus SkillExchange',
+      title: 'Session Completed! ⭐ Rate Your Experience',
+      message: `Your learning session on "${updated.skill}" is complete. Leave feedback to help your peer earn skill badges!`,
+      type: 'session_completed',
+      requestId: updated.id,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    const notifications = db.getNotifications();
+    notifications.unshift(notif);
+    db.saveNotifications(notifications);
+
+    return updated;
+  },
 };
