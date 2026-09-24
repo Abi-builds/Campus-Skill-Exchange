@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Star, MessageSquare, AlertCircle, Award, Check } from 'lucide-react';
+import { X, Star, AlertCircle, Award, Check } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const RatingFeedbackModal: React.FC = () => {
@@ -14,7 +14,6 @@ export const RatingFeedbackModal: React.FC = () => {
 
   if (!showRatingModal || !ratingSessionTarget) return null;
 
-  // Determine who is being rated
   const ratedPeerName =
     currentStudent.id === ratingSessionTarget.requesterId
       ? ratingSessionTarget.peerName
@@ -28,7 +27,6 @@ export const RatingFeedbackModal: React.FC = () => {
     e.preventDefault();
     setError(null);
 
-    // Business rule check (AC2 of SCRUM07-F003-BE-001)
     if (ratingSessionTarget.status !== 'Completed') {
       setError('Business Rule Error: Ratings can only be submitted for completed sessions.');
       return;
@@ -49,17 +47,17 @@ export const RatingFeedbackModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="rating-modal-title"
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fade-in"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fade-in text-left"
     >
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden text-left">
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full shadow-2xl shadow-amber-500/10 overflow-hidden text-white">
         {/* Header */}
-        <div className="bg-linear-to-r from-amber-500 to-orange-600 px-6 py-4 text-white flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-white/20 rounded-xl">
+        <div className="bg-linear-to-r from-amber-500 via-orange-600 to-slate-900 px-6 py-5 flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 bg-white/20 rounded-2xl">
               <Star className="w-5 h-5 fill-white text-white" />
             </div>
             <div>
-              <h3 id="rating-modal-title" className="text-base font-bold">
+              <h3 id="rating-modal-title" className="text-base sm:text-lg font-black text-white">
                 Rate & Leave Feedback
               </h3>
               <p className="text-xs text-amber-100">
@@ -70,7 +68,7 @@ export const RatingFeedbackModal: React.FC = () => {
           <button
             type="button"
             onClick={closeRatingModal}
-            className="p-1 rounded-lg text-amber-100 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-amber-100 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X size={20} />
           </button>
@@ -81,35 +79,35 @@ export const RatingFeedbackModal: React.FC = () => {
           {error && (
             <div
               data-testid="rating-error-alert"
-              className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-center gap-2"
+              className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2"
             >
-              <AlertCircle size={16} className="shrink-0 text-rose-600" />
+              <AlertCircle size={16} className="shrink-0 text-rose-400" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Session Overview Context */}
-          <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 text-xs text-slate-600 space-y-1">
+          <div className="bg-slate-950/70 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-1.5">
             <div className="flex justify-between">
-              <span>Learning Topic:</span>
-              <strong className="text-slate-900 font-bold">{ratingSessionTarget.skill}</strong>
+              <span className="text-slate-500 font-semibold">Learning Topic:</span>
+              <strong className="text-white font-bold">{ratingSessionTarget.skill}</strong>
             </div>
             <div className="flex justify-between">
-              <span>Peer You Are Rating:</span>
-              <strong className="text-emerald-700 font-bold">{ratedPeerName}</strong>
+              <span className="text-slate-500 font-semibold">Peer You Are Rating:</span>
+              <strong className="text-emerald-400 font-bold">{ratedPeerName}</strong>
             </div>
             <div className="flex justify-between">
-              <span>Session Status:</span>
-              <span className="font-semibold text-emerald-600">✓ Completed</span>
+              <span className="text-slate-500 font-semibold">Session Status:</span>
+              <span className="font-bold text-emerald-400">✓ Completed</span>
             </div>
           </div>
 
           {/* Star Rating Control */}
-          <div className="text-center py-2">
-            <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+          <div className="text-center py-3 bg-slate-950/50 rounded-2xl border border-slate-800">
+            <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
               Select Your Rating (1 - 5 Stars) *
             </span>
-            <div className="flex items-center justify-center space-x-2">
+            <div className="flex items-center justify-center space-x-2.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
@@ -124,14 +122,14 @@ export const RatingFeedbackModal: React.FC = () => {
                     size={32}
                     className={`${
                       (hoverScore !== null ? star <= hoverScore : star <= score)
-                        ? 'fill-amber-400 text-amber-500'
-                        : 'text-slate-200'
+                        ? 'fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'
+                        : 'text-slate-800'
                     }`}
                   />
                 </button>
               ))}
             </div>
-            <span className="text-xs font-bold text-slate-700 mt-2 block">
+            <span className="text-xs font-extrabold text-amber-300 mt-2 block">
               {score === 5 && '🌟 Outstanding Session! Highly Recommended'}
               {score === 4 && '👍 Great Exchange! Very Helpful'}
               {score === 3 && '🙂 Good Session, Met Expectations'}
@@ -142,7 +140,7 @@ export const RatingFeedbackModal: React.FC = () => {
 
           {/* Quick Compliment Chips */}
           <div>
-            <span className="text-[11px] font-semibold text-slate-500 block mb-1.5">
+            <span className="text-[11px] font-bold text-slate-400 block mb-1.5">
               Quick compliments:
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -157,7 +155,7 @@ export const RatingFeedbackModal: React.FC = () => {
                   key={idx}
                   type="button"
                   onClick={() => quickPillClick(pill)}
-                  className="text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                  className="text-[11px] bg-slate-950 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl border border-slate-800 transition-colors cursor-pointer"
                 >
                   {pill}
                 </button>
@@ -167,7 +165,7 @@ export const RatingFeedbackModal: React.FC = () => {
 
           {/* Comment Feedback Input */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
               Feedback Comment (Optional)
             </label>
             <textarea
@@ -176,24 +174,24 @@ export const RatingFeedbackModal: React.FC = () => {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Share what you enjoyed or learned from this peer session..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-amber-500 focus:bg-white resize-none"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-hidden focus:ring-2 focus:ring-amber-500 resize-none"
             />
           </div>
 
           {/* Badge Trigger Note */}
-          <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 flex items-center gap-2">
-            <Award size={14} className="shrink-0 text-amber-600" />
+          <div className="text-[11px] text-amber-300 bg-amber-500/10 p-3 rounded-2xl border border-amber-500/20 flex items-center gap-2">
+            <Award size={15} className="shrink-0 text-amber-400" />
             <span>
               Submitting positive feedback helps <strong>{ratedPeerName}</strong> earn the <em>Top Mentor</em> badge!
             </span>
           </div>
 
           {/* Footer */}
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-end space-x-3">
+          <div className="pt-2 border-t border-slate-800 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={closeRatingModal}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="btn-3d-slate px-4 py-2 text-xs cursor-pointer"
             >
               Cancel
             </button>
@@ -201,7 +199,7 @@ export const RatingFeedbackModal: React.FC = () => {
               type="submit"
               data-testid="submit-rating-button"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 disabled:opacity-50 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer"
+              className="btn-3d-amber px-5 py-2.5 text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Check size={14} />
               <span>{isSubmitting ? 'Recording...' : 'Submit Rating & Feedback (AC1)'}</span>

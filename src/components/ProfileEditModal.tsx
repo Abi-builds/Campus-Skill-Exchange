@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, BookOpen, AlertCircle, Save, Check } from 'lucide-react';
+import { X, Plus, BookOpen, AlertCircle, Save } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export const ProfileEditModal: React.FC = () => {
@@ -83,23 +83,23 @@ export const ProfileEditModal: React.FC = () => {
       role="dialog"
       aria-modal="true"
       aria-labelledby="profile-modal-title"
-      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 animate-fade-in"
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fade-in text-left"
     >
-      <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden text-left">
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full shadow-2xl shadow-emerald-500/10 overflow-hidden text-white">
         {/* Header */}
-        <div className="bg-linear-to-r from-emerald-600 to-teal-700 px-6 py-4 text-white flex items-center justify-between">
+        <div className="bg-linear-to-r from-emerald-600 via-teal-600 to-slate-900 px-6 py-5 flex items-center justify-between border-b border-slate-800">
           <div>
-            <h3 id="profile-modal-title" className="text-base font-bold">
+            <h3 id="profile-modal-title" className="text-base sm:text-lg font-black text-white">
               Edit Student Skill Profile
             </h3>
-            <p className="text-xs text-emerald-100">
+            <p className="text-xs text-emerald-200">
               Story: SCRUM07-F001-UI-001 • Profile & Skills Management
             </p>
           </div>
           <button
             type="button"
             onClick={closeProfileEditModal}
-            className="p-1 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-emerald-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X size={20} />
           </button>
@@ -111,9 +111,9 @@ export const ProfileEditModal: React.FC = () => {
           {validationError && (
             <div
               data-testid="profile-validation-error"
-              className="p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-start gap-2.5 animate-shake"
+              className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 animate-shake"
             >
-              <AlertCircle size={16} className="shrink-0 text-rose-600 mt-0.5" />
+              <AlertCircle size={16} className="shrink-0 text-rose-400 mt-0.5" />
               <div>
                 <strong className="block font-bold">Incomplete Profile</strong>
                 <span>{validationError}</span>
@@ -124,26 +124,26 @@ export const ProfileEditModal: React.FC = () => {
           {/* Basic Info Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
                 Full Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
                 Department
               </label>
               <input
                 type="text"
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
                 required
               />
             </div>
@@ -151,23 +151,23 @@ export const ProfileEditModal: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
                 Academic Year
               </label>
               <select
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:bg-white cursor-pointer"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500 cursor-pointer"
               >
-                <option value="1st Year">1st Year</option>
-                <option value="2nd Year">2nd Year</option>
-                <option value="3rd Year">3rd Year</option>
-                <option value="4th Year">4th Year</option>
-                <option value="Postgraduate">Postgraduate</option>
+                <option value="1st Year" className="bg-slate-900 text-white">1st Year</option>
+                <option value="2nd Year" className="bg-slate-900 text-white">2nd Year</option>
+                <option value="3rd Year" className="bg-slate-900 text-white">3rd Year</option>
+                <option value="4th Year" className="bg-slate-900 text-white">4th Year</option>
+                <option value="Postgraduate" className="bg-slate-900 text-white">Postgraduate</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
                 Campus Availability
               </label>
               <input
@@ -175,32 +175,32 @@ export const ProfileEditModal: React.FC = () => {
                 value={availability}
                 onChange={(e) => setAvailability(e.target.value)}
                 placeholder="e.g. Mon, Wed (4:00 PM - 6:00 PM)"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
               />
             </div>
           </div>
 
           {/* Bio */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
+            <label className="block text-xs font-bold text-slate-400 uppercase mb-1">
               Short Bio & Interests
             </label>
             <textarea
               rows={2}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
           {/* SECTION 1: Skills I Can Teach */}
-          <div className="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200/80 space-y-2.5">
+          <div className="bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/20 space-y-2.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
-                <BookOpen size={14} className="text-emerald-700" />
+              <label className="text-xs font-bold text-emerald-400 uppercase flex items-center gap-1.5">
+                <BookOpen size={14} />
                 <span>Skills I Can Teach (Offers)</span>
               </label>
-              <span className="text-[11px] text-emerald-700 font-semibold">
+              <span className="text-[11px] text-emerald-400 font-bold">
                 {teachSkills.length} Added
               </span>
             </div>
@@ -213,13 +213,13 @@ export const ProfileEditModal: React.FC = () => {
                 value={newTeachInput}
                 onChange={(e) => setNewTeachInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTeachSkill())}
-                className="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
               />
               <button
                 type="button"
                 data-testid="btn-add-teach-skill"
                 onClick={handleAddTeachSkill}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                className="btn-3d-emerald px-3.5 py-1.5 text-xs flex items-center gap-1 cursor-pointer"
               >
                 <Plus size={14} /> Add
               </button>
@@ -228,19 +228,19 @@ export const ProfileEditModal: React.FC = () => {
             {/* Chips */}
             <div className="flex flex-wrap gap-1.5 min-h-[32px] pt-1">
               {teachSkills.length === 0 ? (
-                <span className="text-xs text-slate-400 italic">No teaching skills added yet.</span>
+                <span className="text-xs text-slate-500 italic">No teaching skills added yet.</span>
               ) : (
                 teachSkills.map((s, idx) => (
                   <span
                     key={idx}
                     data-testid={`teach-skill-tag-${s}`}
-                    className="inline-flex items-center gap-1 bg-white text-emerald-800 border border-emerald-300 text-xs font-medium px-2.5 py-1 rounded-lg shadow-2xs"
+                    className="inline-flex items-center gap-1.5 bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-bold px-3 py-1 rounded-xl shadow-xs"
                   >
                     <span>{s}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveTeachSkill(s)}
-                      className="text-emerald-500 hover:text-rose-600 cursor-pointer ml-0.5"
+                      className="text-emerald-400 hover:text-rose-400 cursor-pointer"
                     >
                       <X size={12} />
                     </button>
@@ -251,13 +251,13 @@ export const ProfileEditModal: React.FC = () => {
           </div>
 
           {/* SECTION 2: Skills I Want to Learn */}
-          <div className="bg-blue-50/60 p-4 rounded-xl border border-blue-200/80 space-y-2.5">
+          <div className="bg-blue-500/5 p-4 rounded-2xl border border-blue-500/20 space-y-2.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-blue-900 uppercase flex items-center gap-1.5">
-                <BookOpen size={14} className="text-blue-700" />
+              <label className="text-xs font-bold text-blue-400 uppercase flex items-center gap-1.5">
+                <BookOpen size={14} />
                 <span>Skills I Want to Learn (Requests)</span>
               </label>
-              <span className="text-[11px] text-blue-700 font-semibold">
+              <span className="text-[11px] text-blue-400 font-bold">
                 {learnSkills.length} Added
               </span>
             </div>
@@ -270,13 +270,13 @@ export const ProfileEditModal: React.FC = () => {
                 value={newLearnInput}
                 onChange={(e) => setNewLearnInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLearnSkill())}
-                className="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
                 data-testid="btn-add-learn-skill"
                 onClick={handleAddLearnSkill}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                className="btn-3d-indigo px-3.5 py-1.5 text-xs flex items-center gap-1 cursor-pointer"
               >
                 <Plus size={14} /> Add
               </button>
@@ -285,19 +285,19 @@ export const ProfileEditModal: React.FC = () => {
             {/* Chips */}
             <div className="flex flex-wrap gap-1.5 min-h-[32px] pt-1">
               {learnSkills.length === 0 ? (
-                <span className="text-xs text-slate-400 italic">No learning skills added yet.</span>
+                <span className="text-xs text-slate-500 italic">No learning skills added yet.</span>
               ) : (
                 learnSkills.map((s, idx) => (
                   <span
                     key={idx}
                     data-testid={`learn-skill-tag-${s}`}
-                    className="inline-flex items-center gap-1 bg-white text-blue-800 border border-blue-300 text-xs font-medium px-2.5 py-1 rounded-lg shadow-2xs"
+                    className="inline-flex items-center gap-1.5 bg-blue-500/15 text-blue-300 border border-blue-500/30 text-xs font-bold px-3 py-1 rounded-xl shadow-xs"
                   >
                     <span>{s}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveLearnSkill(s)}
-                      className="text-blue-500 hover:text-rose-600 cursor-pointer ml-0.5"
+                      className="text-blue-400 hover:text-rose-400 cursor-pointer"
                     >
                       <X size={12} />
                     </button>
@@ -315,18 +315,18 @@ export const ProfileEditModal: React.FC = () => {
                 setTeachSkills([]);
                 setLearnSkills([]);
               }}
-              className="text-[11px] text-slate-400 hover:text-rose-600 underline cursor-pointer"
+              className="text-[11px] text-slate-500 hover:text-rose-400 underline cursor-pointer"
             >
               Clear all skills (to test AC2 validation)
             </button>
           </div>
 
           {/* Footer */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+          <div className="pt-3 border-t border-slate-800 flex items-center justify-end space-x-3">
             <button
               type="button"
               onClick={closeProfileEditModal}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="btn-3d-slate px-4 py-2 text-xs cursor-pointer"
             >
               Cancel
             </button>
@@ -334,7 +334,7 @@ export const ProfileEditModal: React.FC = () => {
               type="submit"
               data-testid="save-profile-button"
               disabled={isSaving}
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-50 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+              className="btn-3d-emerald px-5 py-2.5 text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Save size={14} />
               <span>{isSaving ? 'Saving Profile...' : 'Save & Publish Profile (AC1)'}</span>

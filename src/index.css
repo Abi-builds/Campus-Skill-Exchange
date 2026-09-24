@@ -4,10 +4,42 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans;
+    @apply bg-[#0b0f19] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-white;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
+/* Bento Card Glass & Depth */
+.bento-card {
+  @apply bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-3xl transition-all duration-300 shadow-xl shadow-black/20;
+}
+
+.bento-card:hover {
+  @apply border-slate-700/80 shadow-2xl shadow-emerald-500/5 -translate-y-0.5;
+}
+
+/* Tactile 3D Buttons */
+.btn-3d-emerald {
+  @apply bg-emerald-500 hover:bg-emerald-400 active:translate-y-1 active:shadow-none text-white font-extrabold rounded-2xl transition-all shadow-[0_4px_0_0_#065f46];
+}
+
+.btn-3d-indigo {
+  @apply bg-indigo-500 hover:bg-indigo-400 active:translate-y-1 active:shadow-none text-white font-extrabold rounded-2xl transition-all shadow-[0_4px_0_0_#3730a3];
+}
+
+.btn-3d-amber {
+  @apply bg-amber-500 hover:bg-amber-400 active:translate-y-1 active:shadow-none text-slate-950 font-extrabold rounded-2xl transition-all shadow-[0_4px_0_0_#b45309];
+}
+
+.btn-3d-slate {
+  @apply bg-slate-800 hover:bg-slate-700 active:translate-y-1 active:shadow-none text-slate-200 font-bold rounded-2xl border border-slate-700/80 transition-all shadow-[0_4px_0_0_#0f172a];
+}
+
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -20,7 +52,7 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes bounceSubtle {
@@ -34,4 +66,36 @@
 
 .animate-bounce-subtle {
   animation: bounceSubtle 3s ease-in-out infinite;
+}
+
+/* Shimmer glow effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-badge {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* Custom Scrollbar for Bento layout */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
