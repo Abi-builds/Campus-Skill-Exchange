@@ -14,7 +14,7 @@ A web-based platform that enables students to connect with each other, share ski
 - Messaging and notifications
 - Reviews and ratings
 
-## Tech Stack
+## Tech Stack used
 
 - **Frontend:** HTML, CSS, JavaScript
 - **Backend:** Python, FastAPI
